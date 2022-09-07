@@ -1,0 +1,35 @@
+1. Install cloudflared
+	<-- Win10++ -->
+	Download https://github.com/cloudflare/cloudflared/releases/download/2022.8.4/cloudflared-windows-amd64.exe
+	Rename cloudflared-windows-amd64.exe cloudflared.exe
+	
+	<-- Linux (Debian based) -->
+	wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb && dpkg -i cloudflared-linux-amd64.deb
+	
+2. Create tunnel via CLI (PowerShell recommended for Windows)
+	- cloudflared tunnel login
+	- cloudflared tunnel create <NAME>
+	- cloudflared tunnel list
+	- cd to user's home dir, .cloudflared
+	- create config.yml file
+	- edit config.yml file
+<-- BEGIN CONFIG -->
+tunnel: <Tunnel-UUID>
+credentials-file: /home_dir/.cloudflared/<Tunnel-UUID>.json
+<-- END CONFIG -->
+
+3. Routing traffic (equivalent to create CNAME record on CF dashboard)
+	- cloudflared tunnel route dns <UUID or NAME> <hostname>
+	
+4. Ingress setup
+	- edit config.yml file
+<-- BEGIN CONFIG --> (PAY ATTENTION TO INDENTATIONS AS THEY ARE YAML FORMAT SPECIFIC)
+ingress:
+    - hostname: FULL FQDN
+      service: https://<IP>:443
+      originRequest:
+        noTLSVerify: true
+<-- END CONFIG -->
+	
+5. Running tunnel
+	- cloudflared tunnel run <UUID or NAME>
